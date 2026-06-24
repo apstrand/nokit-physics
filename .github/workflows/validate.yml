@@ -1,0 +1,30 @@
+name: Validate site
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render site
+        run: quarto render
+
+      - name: Download site-validator
+        run: |
+          gh release download --repo apstrand/site-validator --pattern sv --output /usr/local/bin/sv
+          chmod +x /usr/local/bin/sv
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Validate site
+        run: sv --format github _site/

@@ -1,0 +1,7 @@
+.DS_Store
+.obsidian
+/.quarto/
+**/*.quarto_ipynb
+_site
+*.pdf
+site

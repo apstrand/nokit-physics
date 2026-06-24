@@ -1,0 +1,329 @@
+---
+title: "Experiment Finder"
+description: "Select the supplies you have to see which experiments you can do"
+toc: false
+---
+
+Select the supplies you have on hand, and the finder will show you which experiments are within reach — and which ones need just one more item.
+
+```{=html}
+<style>
+.finder-layout {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .finder-layout { grid-template-columns: 1fr; }
+}
+.finder-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.supply-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 1.5rem;
+  align-items: start;
+}
+.supply-category h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bs-secondary);
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.supply-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.supply-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  line-height: 1.3;
+}
+.supply-label input[type="checkbox"] {
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.supply-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  color: inherit;
+  opacity: 0.3;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.supply-link:hover {
+  opacity: 1;
+}
+#summary-count {
+  font-size: 1.05rem;
+  color: var(--bs-secondary);
+  margin: 0 0 1rem;
+}
+.results-section {
+  margin-bottom: 1.75rem;
+}
+.results-section h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bs-secondary);
+  margin-bottom: 0.6rem;
+}
+.exp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.55rem 1rem;
+  margin-bottom: 0.4rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.9rem;
+}
+.exp-card.available {
+  background: #d4edda;
+  border-left: 3px solid #28a745;
+  color: #155724;
+}
+.exp-card.almost {
+  background: #fff3cd;
+  border-left: 3px solid #e6ac00;
+  color: #664d00;
+}
+.exp-card a.exp-name {
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+}
+.exp-card a.exp-name:hover {
+  text-decoration: underline;
+}
+.exp-card .exp-missing {
+  font-size: 0.82rem;
+  opacity: 0.75;
+}
+.exp-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.12);
+  margin-left: 0.4rem;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+[data-bs-theme="dark"] .exp-card.available {
+  background: rgba(40, 167, 69, 0.18);
+  border-color: #28a745;
+  color: #7dd491;
+}
+[data-bs-theme="dark"] .exp-card.almost {
+  background: rgba(230, 172, 0, 0.18);
+  border-color: #e6ac00;
+  color: #ffc845;
+}
+</style>
+
+<div class="finder-layout">
+  <div class="finder-left">
+    <div class="finder-controls">
+      <button id="select-all" class="btn btn-sm btn-outline-primary">Select All</button>
+      <button id="clear-all" class="btn btn-sm btn-outline-secondary">Clear All</button>
+    </div>
+    <div id="supply-grid" class="supply-grid"></div>
+  </div>
+  <div class="finder-right">
+    <p id="summary-count">Loading…</p>
+    <div id="results"></div>
+  </div>
+</div>
+
+<script>
+const SUPPLIES = [
+  { id: "polarizing-filters", name: "Polarizing Filters", category: "Optics" },
+  { id: "ball-bearings", name: "Steel Ball Bearings", category: "Electrostatics" },
+  { id: "castor-oil", name: "Castor Oil", category: "Electrostatics" },
+  { id: "hv-supply", name: "High-Voltage Supply", category: "Electrostatics" },
+];
+
+const EXPERIMENTS = [
+  { id: "polarizers", name: "Polarized Light and the Three-Polarizer Paradox", supplies: ["polarizing-filters"] },
+  { id: "pearl-chains", name: "Electric Pearl Chains", supplies: ["ball-bearings", "castor-oil", "hv-supply"] },
+];
+
+const GUIDES = [
+  // Add guides here as they are added to the site
+];
+
+const LS_KEY = "physics-experiment-finder-v1";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch { return new Set(); }
+}
+
+function saveState(checked) {
+  localStorage.setItem(LS_KEY, JSON.stringify([...checked]));
+}
+
+var LINK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 0-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>';
+
+function renderSupplies(checked) {
+  const categories = {};
+  for (const supply of SUPPLIES) {
+    if (!categories[supply.category]) categories[supply.category] = [];
+    categories[supply.category].push(supply);
+  }
+  const grid = document.getElementById("supply-grid");
+  grid.innerHTML = "";
+  if (SUPPLIES.length === 0) {
+    grid.innerHTML = '<p style="color:var(--bs-secondary);font-size:0.9rem;">No supplies added yet.</p>';
+    return;
+  }
+  for (const [cat, supplies] of Object.entries(categories)) {
+    const div = document.createElement("div");
+    div.className = "supply-category";
+    const items = supplies.map(s =>
+      '<label class="supply-label"><input type="checkbox" data-id="' + s.id + '"' + (checked.has(s.id) ? " checked" : "") + ' onchange="onCheckboxChange()"> ' + s.name + '<a href="supplies/' + s.id + '.html" target="_blank" class="supply-link" title="Open ' + s.name + ' page">' + LINK_SVG + '</a></label>'
+    ).join("");
+    div.innerHTML = '<h4>' + cat + '</h4><div class="supply-list">' + items + '</div>';
+    grid.appendChild(div);
+  }
+}
+
+function onCheckboxChange() {
+  const state = getCurrentChecked();
+  saveState(state);
+  renderResults(state);
+  updateSummary(state);
+}
+
+function getCurrentChecked() {
+  const checked = new Set();
+  document.querySelectorAll("#supply-grid input[type=checkbox]:checked").forEach(cb => {
+    checked.add(cb.dataset.id);
+  });
+  return checked;
+}
+
+function supplyName(id) {
+  const s = SUPPLIES.find(x => x.id === id);
+  return s ? s.name : id;
+}
+
+function classify(items, checked, hrefPrefix) {
+  var available = [], almost = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var href = hrefPrefix + item.id + ".html";
+    var missing = item.supplies.filter(function(s) { return !checked.has(s); });
+    if (missing.length === 0) {
+      available.push({ item: item, missing: [], href: href });
+    } else if (item.supplies.some(function(s) { return checked.has(s); })) {
+      almost.push({ item: item, missing: missing, href: href });
+    }
+  }
+  almost.sort(function(a, b) { return a.missing.length - b.missing.length; });
+  return { available: available, almost: almost };
+}
+
+function makeCard(entry, cardClass, bullet, badge, missingLabel) {
+  var badgeHtml = badge ? '<span class="exp-badge">' + badge + '</span>' : '';
+  var missingHtml = entry.missing.length > 0 ? '<span class="exp-missing">' + missingLabel + ': ' + entry.missing.map(supplyName).join(", ") + '</span>' : '';
+  return '<div class="exp-card ' + cardClass + '"><a class="exp-name" href="' + entry.href + '">' + bullet + ' ' + entry.item.name + badgeHtml + '</a>' + missingHtml + '</div>';
+}
+
+function renderResults(checked) {
+  var exps = classify(EXPERIMENTS, checked, "experiments/");
+  var guides = classify(GUIDES, checked, "");
+
+  var availLabel = "Available";
+  var almostLabel = "Also needs";
+  var missingLabel = "missing";
+  var emptyMsg = EXPERIMENTS.length === 0
+    ? "No experiments added yet."
+    : "Select supplies above to see which experiments you can do.";
+
+  var total = exps.available.length + guides.available.length;
+  var results = document.getElementById("results");
+  results.innerHTML = "";
+
+  var availSection = document.createElement("div");
+  availSection.className = "results-section";
+  if (total > 0) {
+    availSection.innerHTML = '<h3>' + availLabel + ' (' + total + ')</h3>' +
+      exps.available.map(function(e) { return makeCard(e, "available", "&#9679;", null, missingLabel); }).join("") +
+      guides.available.map(function(e) { return makeCard(e, "available", "&#9679;", "guide", missingLabel); }).join("");
+  } else {
+    availSection.innerHTML = '<h3>' + availLabel + ' (0)</h3><p class="text-muted" style="font-size:0.9rem;">' + emptyMsg + '</p>';
+  }
+  results.appendChild(availSection);
+
+  var almostTotal = exps.almost.length + guides.almost.length;
+  if (almostTotal > 0) {
+    var almostSection = document.createElement("div");
+    almostSection.className = "results-section";
+    almostSection.innerHTML = '<h3>' + almostLabel + ' (' + almostTotal + ')</h3>' +
+      exps.almost.map(function(e) { return makeCard(e, "almost", "&#9675;", null, missingLabel); }).join("") +
+      guides.almost.map(function(e) { return makeCard(e, "almost", "&#9675;", "guide", missingLabel); }).join("");
+    results.appendChild(almostSection);
+  }
+}
+
+function updateSummary(checked) {
+  var el = document.getElementById("summary-count");
+  var expCount = EXPERIMENTS.filter(function(exp) {
+    return exp.supplies.every(function(s) { return checked.has(s); });
+  }).length;
+  var guideCount = GUIDES.filter(function(g) {
+    return g.supplies.every(function(s) { return checked.has(s); });
+  }).length;
+  el.textContent = expCount + " of " + EXPERIMENTS.length + " experiments · " + guideCount + " of " + GUIDES.length + " guides available";
+}
+
+function init() {
+  const checked = loadState();
+  renderSupplies(checked);
+  renderResults(checked);
+  updateSummary(checked);
+
+  document.getElementById("select-all").addEventListener("click", function() {
+    document.querySelectorAll("#supply-grid input[type=checkbox]").forEach(function(cb) { cb.checked = true; });
+    const state = getCurrentChecked();
+    saveState(state);
+    renderResults(state);
+    updateSummary(state);
+  });
+
+  document.getElementById("clear-all").addEventListener("click", function() {
+    document.querySelectorAll("#supply-grid input[type=checkbox]").forEach(function(cb) { cb.checked = false; });
+    const state = new Set();
+    saveState(state);
+    renderResults(state);
+    updateSummary(state);
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+```

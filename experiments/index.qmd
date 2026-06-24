@@ -1,0 +1,16 @@
+---
+title: "Experiments"
+description: "Hands-on physics experiments"
+---
+
+# Physics Experiments
+
+Hands-on experiments demonstrating fundamental physics principles. Each experiment includes materials with specific quantities, step-by-step procedures, the underlying science, and context.
+
+## Optics
+
+- [Polarized Light and the Three-Polarizer Paradox](polarizers.qmd) - Two crossed polarizers block all light; adding a third lets some back through
+
+## Electrostatics
+
+- [Electric Pearl Chains](pearl-chains.qmd) - Steel ball bearings in castor oil spontaneously form chains aligned with a high-voltage electric field

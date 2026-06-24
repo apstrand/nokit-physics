@@ -1,0 +1,8 @@
+---
+title: "Supply Inventory"
+description: "Complete list of available supplies and equipment"
+---
+
+Click any item to open its full page with details and suggested experiments.
+
+*(No supplies added yet.)*

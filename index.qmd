@@ -1,0 +1,22 @@
+---
+title: "Home Physics Lab"
+subtitle: "Learn physics one experiment at a time"
+---
+
+# Welcome
+
+This site contains guides and resources for educational physics experiments. Whether you're a curious adult, a homeschool parent, or just someone who wants to understand the forces and phenomena of the natural world, you'll find hands-on experiments with clear explanations.
+
+## Quick Links
+
+### [Supply Inventory](inventory.qmd)
+Complete list of supplies and equipment with suggested experiments for each.
+
+### [Experiments](experiments/index.qmd)
+Hands-on physics experiments — coming soon.
+
+## About This Project
+
+This project is designed for adults and children interested in learning physics through hands-on experimentation. All experiments use equipment that can be obtained for home use, with clear safety guidelines.
+
+The guides emphasize understanding *why* things happen, not just following procedures. Each experiment includes the underlying physics explained at an accessible level.

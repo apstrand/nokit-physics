@@ -1,0 +1,106 @@
+---
+title: "Polarized Light and the Three-Polarizer Paradox"
+description: "Two crossed polarizers block all light — then adding a third lets some through"
+---
+
+**Difficulty**: Very Easy | **Time**: 10 minutes | **Visual Impact**: High
+
+## Historical Context
+
+The story of polarization begins with a beautiful accident. In 1669, Erasmus Bartholin noticed that crystals of Iceland spar (calcite) split a single ray of light into two. He could not explain why — the wave theory of light did not yet exist. Christiaan Huygens returned to the problem in 1678 and found something even stranger: if he stacked two calcite crystals and rotated one, the two beams did not behave the same way. At certain orientations, one beam vanished entirely. Light, he concluded, must have an asymmetry perpendicular to its direction of travel — what we now call polarization. But he had no framework to understand it further.
+
+The decisive step came from an observation by Étienne-Louis Malus in 1808. While looking through a calcite crystal at the last light of sunset reflected in the windows of the Luxembourg Palace in Paris, he noticed the reflected light behaved exactly like light that had passed through a crystal. Reflection could polarize light. He worked out the quantitative law relating transmitted intensity to angle — Malus's Law — and received the Prix de l'Institut for it in 1810. He died two years later, at thirty-six, never knowing the deeper reason his law worked.
+
+That deeper reason came from James Clerk Maxwell's equations of electromagnetism in 1865. Light is a transverse wave in the electromagnetic field: the electric and magnetic components oscillate perpendicular to the direction of travel. This transverse character is precisely what polarization describes — the orientation of that oscillation.
+
+The practical side of the story belongs to Edwin Land. In 1928, at nineteen years old and during his first year at Harvard, he grew crystals of quinine iodosulfate and aligned them by dragging them across a surface. When stacked and sealed in plastic, they polarized light efficiently across a large sheet — practical, cheap, and manufacturable. He went on to found the Polaroid Corporation, and polarizing filters became ubiquitous in photography, optics, and eventually LCD screens, which use precisely the paradox you are about to observe.
+
+## Materials
+
+- 3 linear polarizing filters — photography gray filters, educational polarizer sheets, or filters salvaged from an old LCD screen all work. Three-dimensional cinema glasses use circular polarizers and will not demonstrate Malus's Law cleanly; avoid them.
+- A bright light source — a window in daylight, a bare LED lamp, or a white-LED flashlight. Avoid fluorescent tubes, which emit polarized light and give inconsistent results.
+- Tape or a marker (optional) — to mark the transmission axis on each filter.
+
+## Procedure
+
+### Part 1: Two polarizers
+
+1. Hold one polarizer in front of the light source. The transmitted light dims noticeably — roughly by half. This is the filter selecting one orientation of the light's oscillation and blocking everything perpendicular to it.
+
+2. Hold a second polarizer behind the first, between the first filter and your eye. Both are transmitting — the combined dimming is roughly the same as before.
+
+3. Slowly rotate the second polarizer while keeping the first fixed. You will find a position where the light brightens slightly relative to the previous step (both transmission axes aligned — **parallel polarizers**) and a position where the image goes nearly black (**crossed polarizers**). The transition from bright to dark takes exactly a quarter turn — 90°.
+
+4. Find the darkest position precisely and hold it. Note this orientation: the two filters are crossed at 90°, and almost no light gets through. This is your starting configuration for Part 2.
+
+### Part 2: The three-polarizer paradox
+
+1. With the two crossed polarizers still held in position — the dark state — take the third polarizer and slide it between the other two. Keep the outer two filters fixed.
+
+2. With the middle polarizer at a random angle, you will likely see some light return. Rotate it slowly through a full 360° and observe how the transmitted brightness varies.
+
+3. Find the angle where transmitted light is at its maximum. It occurs at **45° from each of the outer polarizers** — halfway between the two crossed axes.
+
+4. Now remove the middle polarizer. Darkness returns immediately.
+
+5. Rotate the outer polarizers toward each other, reducing the crossed angle from 90° toward 0°. Observe how the light from the three-polarizer arrangement changes as the geometry changes.
+
+## The Science
+
+### Why light polarizes
+
+Light is an electromagnetic wave. Its electric field oscillates perpendicular to the direction the light travels — transversely, not along the direction of propagation as sound does. Unpolarized light from the sun or a lamp contains all orientations of this oscillation simultaneously, averaging out to no preferred direction.
+
+A linear polarizer contains a grid of aligned molecules or structures that absorb the component of the electric field along one direction while transmitting the perpendicular component. Any polarization direction in the incoming light is projected onto the transmission axis. Half the power is absorbed; half passes through, now oscillating in a single plane.
+
+### Malus's Law
+
+When already-polarized light hits a second polarizer, only the component of the electric field aligned with the second filter's axis is transmitted. If the electric field amplitude is $E_0$ and the angle between the polarization direction and the filter axis is $\theta$, the transmitted amplitude is $E_0 \cos\theta$. Since intensity is proportional to the square of amplitude:
+
+$$I = I_0 \cos^2 \theta$$
+
+This is Malus's Law. At $\theta = 0°$ (parallel filters), all light passes: $\cos^2 0° = 1$. At $\theta = 90°$ (crossed filters), none passes: $\cos^2 90° = 0$.
+
+### Why the third polarizer works
+
+This is where the result becomes genuinely surprising. Two crossed polarizers transmit zero light. Adding a third filter — blocking more — somehow lets light through. What is happening?
+
+The key is that each polarizer does not merely block — it **projects**. Whatever polarization state arrives, the filter projects it onto its own axis, producing newly polarized output. The middle polarizer changes the polarization state, not just the intensity.
+
+Following the light through each stage (starting with unpolarized light of intensity $I_0$):
+
+| Stage | What happens | Intensity |
+|---|---|---|
+| First polarizer | Selects one axis from unpolarized light | $I_0 / 2$ |
+| Middle polarizer at 45° | Projects onto 45° axis: $\cos^2 45° = 1/2$ | $I_0 / 4$ |
+| Last polarizer at 90° from first, so 45° from middle | Projects again: $\cos^2 45° = 1/2$ | $I_0 / 8$ |
+
+About **12.5%** of the original light emerges. Without the middle polarizer, the last filter sees polarization at exactly 90° to its axis and transmits zero.
+
+The 45° angle turns out to be optimal. The intensity after the middle filter is:
+
+$$I = \frac{I_0}{2} \cos^2\theta \cdot \cos^2(90° - \theta) = \frac{I_0}{2} \cos^2\theta \sin^2\theta = \frac{I_0}{8} \sin^2(2\theta)$$
+
+This is maximized when $\sin^2(2\theta) = 1$, that is, when $2\theta = 90°$ and $\theta = 45°$. The halfway angle is not just intuitive — it is mathematically exact.
+
+### A quantum picture
+
+At the scale of individual photons, the story is sharper still. A photon passing the first polarizer is in a definite polarization state — say, horizontal. When it encounters the middle polarizer at 45°, quantum mechanics says it is in a superposition of the two states the 45° filter can transmit or absorb. With probability $\cos^2 45° = 1/2$, it is transmitted and its polarization is now "45°" — a new, definite state. When this photon then hits the last filter (vertical), it is in a superposition of that filter's states. Half the time it transmits.
+
+The classical and quantum pictures give the same numerical answer, but the quantum version makes it vivid: each polarizer does not just sort photons by their existing states — it creates a new state. This experiment is one of the simplest physical demonstrations of quantum state projection, and the non-classical multiplication of probabilities is the same arithmetic that underlies Bell's theorem and quantum cryptography.
+
+## Exploratory Questions
+
+**1. Finding the optimum.** The calculation above shows that 45° is the optimal angle for the middle polarizer. Can you verify this experimentally? Set up two crossed polarizers and the middle one, and carefully rotate the middle filter in small steps, noting the brightness at each angle. Does the maximum occur at exactly 45°?
+
+**2. Two middle polarizers.** Replace the single middle polarizer with two, placed sequentially between the crossed pair. Set the first at 30° and the second at 60°. How much light gets through now? Calculate the expected fraction using Malus's Law applied twice, then verify with your filters. How does this compare to the single-at-45° result?
+
+**3. Continuous rotation to full transmission.** Is it possible to arrange a stack of polarizers so that nearly all of the original light passes through two crossed polarizers? With many intermediate polarizers evenly spaced in angle, the transmission approaches a limit as their number increases. What do you think that limit is, and why?
+
+**4. Skylight polarization.** On a clear day, light from the blue sky (not the sun directly) is partially polarized due to Rayleigh scattering. Hold a single polarizer up to different parts of the sky and rotate it. At what direction from the sun is the polarization strongest? Can you find a direction where there is no polarization?
+
+**5. Brewster's angle.** Light reflected off a non-metallic surface at a specific angle — Brewster's angle — is completely polarized parallel to the surface. For glass, this is about 56°; for water, about 53°. Hold a single polarizer near a window and look at reflections off a flat table or floor. Rotate the polarizer: at what orientation is the glare minimized? This is the principle behind polarized sunglasses.
+
+**6. LCD screens.** An LCD monitor or phone screen viewed through a single polarizer goes dark when the polarizer is at 90° to the screen's polarization axis. What angle is your phone's screen polarized at? What happens if you view it while wearing polarized sunglasses and tilt your head?
+
+**7. Reflection and transmission.** Malus's Law says $I = I_0 \cos^2\theta$. The blocked fraction $I_0 \sin^2\theta$ is absorbed by the filter as heat. For a pair of polarizers at 45°, what fraction is absorbed by the first and what fraction by the second? Does the order of absorbers matter for the final transmitted intensity?

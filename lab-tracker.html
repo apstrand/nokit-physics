@@ -1,0 +1,291 @@
+<script>
+(function () {
+  'use strict';
+
+  var FAV_KEY  = 'nokit-phys-favorites-v1';
+  var DONE_KEY = 'nokit-phys-done-v1';
+
+  // ── Storage ───────────────────────────────────────────────────────────────
+
+  function loadFavs() {
+    try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+  function saveFavs(list) { localStorage.setItem(FAV_KEY, JSON.stringify(list)); }
+
+  function loadDone() {
+    try { return JSON.parse(localStorage.getItem(DONE_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+  function saveDone(list) { localStorage.setItem(DONE_KEY, JSON.stringify(list)); }
+
+  // ── URL detection ─────────────────────────────────────────────────────────
+
+  function getExpSlug() {
+    var m = window.location.pathname.match(/\/experiments\/([^/?#]+?)(?:\.html)?(?:[?#]|$)/);
+    return (m && m[1] !== 'index') ? m[1] : null;
+  }
+
+  function isMyLabPage() {
+    return /\/my-lab(?:\.html)?(?:[?#]|$)/.test(window.location.pathname);
+  }
+
+  function isExpIndexPage() {
+    return /\/experiments\/?(?:index\.html)?(?:[?#]|$)/.test(window.location.pathname);
+  }
+
+  function slugFromHref(href) {
+    var m = href.match(/\/experiments\/([a-z0-9-]+)\.html$/);
+    return (m && m[1] !== 'index') ? m[1] : null;
+  }
+
+  // ── Page meta ─────────────────────────────────────────────────────────────
+
+  function getPageMeta() {
+    var el = document.querySelector('#title-block-header .title, h1.title, #quarto-document-content h1');
+    var title = el ? el.textContent.trim() : document.title.split('—')[0].trim();
+    var metaEl = document.querySelector('meta[name="description"]');
+    return { title: title, description: metaEl ? metaEl.getAttribute('content') : '' };
+  }
+
+  // ── Formatting ────────────────────────────────────────────────────────────
+
+  function fmtDate(iso) {
+    return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Experiment page: inject buttons ───────────────────────────────────────
+
+  function injectButtons(slug) {
+    var meta   = getPageMeta();
+    var favs   = loadFavs();
+    var done   = loadDone();
+    var isFav  = favs.some(function(e) { return e.id === slug; });
+    var doneEnt= done.find(function(e) { return e.id === slug; }) || null;
+
+    var bar = document.createElement('div');
+    bar.id = 'lab-action-bar';
+    bar.className = 'lab-action-bar';
+
+    // Favorite button
+    var favBtn = document.createElement('button');
+    favBtn.className = 'lab-btn lab-btn-fav' + (isFav ? ' active' : '');
+    setFavLabel(favBtn, isFav);
+    favBtn.addEventListener('click', function () {
+      var list = loadFavs();
+      var idx  = list.findIndex(function(e) { return e.id === slug; });
+      if (idx >= 0) {
+        list.splice(idx, 1);
+        favBtn.classList.remove('active');
+        setFavLabel(favBtn, false);
+      } else {
+        list.push({ id: slug, title: meta.title, description: meta.description });
+        favBtn.classList.add('active');
+        setFavLabel(favBtn, true);
+      }
+      saveFavs(list);
+    });
+
+    // Done button
+    var doneBtn = document.createElement('button');
+    doneBtn.className = 'lab-btn lab-btn-done' + (doneEnt ? ' active' : '');
+    setDoneLabel(doneBtn, doneEnt);
+    doneBtn.addEventListener('click', function () {
+      var list = loadDone();
+      var idx  = list.findIndex(function(e) { return e.id === slug; });
+      if (idx >= 0) {
+        list.splice(idx, 1);
+        saveDone(list);
+        doneBtn.classList.remove('active');
+        setDoneLabel(doneBtn, null);
+      } else {
+        var entry = { id: slug, title: meta.title, description: meta.description, date: new Date().toISOString() };
+        list.push(entry);
+        saveDone(list);
+        doneBtn.classList.add('active');
+        setDoneLabel(doneBtn, entry);
+      }
+    });
+
+    bar.appendChild(favBtn);
+    bar.appendChild(doneBtn);
+
+    var anchor = document.getElementById('title-block-header') ||
+                 document.querySelector('#quarto-document-content h1') ||
+                 document.querySelector('main h1');
+    if (anchor) anchor.insertAdjacentElement('afterend', bar);
+  }
+
+  function setFavLabel(btn, active) {
+    btn.textContent = (active ? '★' : '☆') + ' ' + (active ? 'Favorited' : 'Favorite');
+    btn.title = active ? 'Remove from favorites' : 'Add to favorites';
+  }
+
+  function setDoneLabel(btn, entry) {
+    if (entry) {
+      btn.textContent = '✓ Done · ' + fmtDate(entry.date);
+      btn.title = 'Click to unmark as done';
+    } else {
+      btn.textContent = '✓ Mark as Done';
+      btn.title = 'Mark this experiment as done';
+    }
+  }
+
+  // ── Experiment list: inject star buttons ─────────────────────────────────
+
+  function injectListStars() {
+    var favs = loadFavs();
+    var links = document.querySelectorAll('#quarto-document-content li a[href]');
+    links.forEach(function(a) {
+      var id = slugFromHref(a.getAttribute('href'));
+      if (!id) return;
+
+      var isFav = favs.some(function(e) { return e.id === id; });
+      var btn = document.createElement('button');
+      btn.className = 'list-star-btn' + (isFav ? ' active' : '');
+      btn.dataset.id = id;
+      btn.textContent = isFav ? '★' : '☆';
+      btn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+      btn.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var list = loadFavs();
+        var idx  = list.findIndex(function(e) { return e.id === id; });
+        var nowFav;
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          nowFav = false;
+        } else {
+          var title = a.textContent.trim();
+          var liText = (a.parentNode.textContent || '').replace(title, '').replace(/^\s*[-—]\s*/, '').trim();
+          list.push({ id: id, title: title, description: liText });
+          nowFav = true;
+        }
+        saveFavs(list);
+        // Update all stars for this experiment on the page
+        document.querySelectorAll('.list-star-btn[data-id="' + id + '"]').forEach(function(b) {
+          b.textContent = nowFav ? '★' : '☆';
+          b.classList.toggle('active', nowFav);
+          b.title = nowFav ? 'Remove from favorites' : 'Add to favorites';
+        });
+      });
+
+      a.insertAdjacentElement('beforebegin', btn);
+    });
+  }
+
+  // ── My Lab page ───────────────────────────────────────────────────────────
+
+  function renderMyLab() {
+    renderFavs(loadFavs());
+    renderDoneList(loadDone());
+    var exportBtn = document.getElementById('export-done');
+    if (exportBtn) exportBtn.addEventListener('click', exportDone);
+  }
+
+  function renderFavs(favs) {
+    var el = document.getElementById('my-favorites');
+    if (!el) return;
+    if (!favs.length) {
+      el.innerHTML = '<p class="tracker-empty">No favorites yet — star an experiment to save it here.</p>';
+      return;
+    }
+    el.innerHTML = favs.map(function(e) {
+      return '<div class="tracker-row">' +
+        '<div class="tracker-info">' +
+          '<a href="experiments/' + escHtml(e.id) + '.html" class="tracker-title">' + escHtml(e.title) + '</a>' +
+          (e.description ? '<span class="tracker-desc">' + escHtml(e.description) + '</span>' : '') +
+        '</div>' +
+        '<button class="tracker-remove" data-type="fav" data-id="' + escHtml(e.id) + '" title="Remove from favorites">×</button>' +
+      '</div>';
+    }).join('');
+    el.querySelectorAll('.tracker-remove').forEach(function(btn) {
+      btn.addEventListener('click', function () {
+        var updated = loadFavs().filter(function(e) { return e.id !== btn.dataset.id; });
+        saveFavs(updated);
+        renderFavs(updated);
+      });
+    });
+  }
+
+  function renderDoneList(done) {
+    var el = document.getElementById('my-done');
+    if (!el) return;
+
+    var countEl = document.getElementById('done-count');
+    if (countEl) countEl.textContent = done.length ? done.length + ' experiment' + (done.length === 1 ? '' : 's') : '';
+
+    if (!done.length) {
+      el.innerHTML = '<p class="tracker-empty">No experiments marked done yet.</p>';
+      return;
+    }
+    var sorted = done.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+    el.innerHTML = sorted.map(function(e) {
+      return '<div class="tracker-row">' +
+        '<span class="tracker-date">' + fmtDate(e.date) + '</span>' +
+        '<div class="tracker-info">' +
+          '<a href="experiments/' + escHtml(e.id) + '.html" class="tracker-title">' + escHtml(e.title) + '</a>' +
+          (e.description ? '<span class="tracker-desc">' + escHtml(e.description) + '</span>' : '') +
+        '</div>' +
+        '<button class="tracker-remove" data-type="done" data-id="' + escHtml(e.id) + '" title="Remove">×</button>' +
+      '</div>';
+    }).join('');
+    el.querySelectorAll('.tracker-remove').forEach(function(btn) {
+      btn.addEventListener('click', function () {
+        var updated = loadDone().filter(function(e) { return e.id !== btn.dataset.id; });
+        saveDone(updated);
+        renderDoneList(updated);
+      });
+    });
+  }
+
+  function exportDone() {
+    var done = loadDone();
+    if (!done.length) return;
+    var sorted = done.slice().sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+    var header = [
+      'Completed Experiments',
+      '=====================',
+      'Exported: ' + new Date().toLocaleDateString(),
+      'Total:    ' + done.length,
+      ''
+    ];
+    var rows = sorted.map(function(e) {
+      var line = e.date.slice(0, 10) + '  ' + e.title;
+      return e.description ? line + '\n            ' + e.description : line;
+    });
+    var text = header.concat(rows).join('\n');
+    var blob = new Blob([text], { type: 'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'my-experiments.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+
+  function onReady(fn) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn);
+    } else {
+      fn();
+    }
+  }
+
+  var slug = getExpSlug();
+  if (slug) {
+    onReady(function () { injectButtons(slug); });
+  } else if (isExpIndexPage()) {
+    onReady(injectListStars);
+  } else if (isMyLabPage()) {
+    onReady(renderMyLab);
+  }
+})();
+</script>

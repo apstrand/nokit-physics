@@ -1,0 +1,118 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "nokit.org"
+  description: "Educational physics experiments and guides"
+  site-url: "https://nokit.org/physics"
+  bread-crumbs: false
+  navbar:
+    # logo: icon.png
+    logo-href: ../
+    background: primary
+    pinned: true
+    left:
+      - text: Projects
+        href: ../projects/
+      - text: Chemistry
+        href: ../chemistry/
+      - text: Physics
+        href: ../physics/
+      - text: Electronics
+        href: ../electronics/
+      - text: Blog
+        href: ../blog/
+  sidebar:
+    style: docked
+    search: true
+    collapse-level: 2
+    contents:
+      - section: "Getting Started"
+        contents:
+          - href: index.qmd
+            text: Introduction
+          - href: inventory.qmd
+            text: Inventory
+          - href: experiment-finder.qmd
+            text: Experiment Finder
+          - href: my-lab.qmd
+            text: My Lab
+      - section: "Experiments"
+        contents:
+          - href: experiments/index.qmd
+            text: All Experiments
+          - section: "Optics"
+            contents:
+              - href: experiments/polarizers.qmd
+          - section: "Electrostatics"
+            contents:
+              - href: experiments/pearl-chains.qmd
+      - href: ../about.html
+        text: About
+  page-footer:
+    center: "Home Physics Lab - Learning by Doing"
+
+format:
+  html:
+    theme:
+      light: [sandstone, theme.scss]
+      dark: [darkly, theme-dark.scss]
+    css: [shared.css, styles.css]
+    mainfont: Nunito
+    monofont: Fira Code
+    toc: true
+    toc-depth: 3
+    smooth-scroll: false
+    number-sections: false
+    code-fold: true
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@500;600;700&family=Fira+Code:wght@400;500&display=swap">
+        <style>:root{--bs-primary:#283593}</style>
+    include-after-body:
+      - file: lab-tracker.html
+      - text: |
+          <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            const headerHeight = 70;
+            if (window.location.hash) {
+              setTimeout(function() {
+                const target = document.querySelector(window.location.hash);
+                if (target) {
+                  const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                  window.scrollTo({ top: targetPosition, behavior: 'instant' });
+                }
+              }, 100);
+            }
+            document.querySelectorAll('a[href*="#"]').forEach(link => {
+              link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                  e.preventDefault();
+                  const target = document.querySelector(href);
+                  if (target) {
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    window.scrollTo({ top: targetPosition, behavior: 'instant' });
+                    history.pushState(null, null, href);
+                  }
+                }
+              });
+            });
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(function(link) {
+              if (link.textContent.trim() === 'Physics') {
+                link.classList.add('active');
+              }
+            });
+          });
+          </script>
+
+execute:
+  freeze: auto
+
+ignore:
+  - "CLAUDE.md"
+  - "GEMINI.md"
+  - "AGENTS.md"

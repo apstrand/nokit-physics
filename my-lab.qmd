@@ -1,0 +1,17 @@
+---
+title: "My Lab"
+description: "Your favorited and completed experiments"
+toc: false
+---
+
+Your personal lab notebook — saved in this browser. Nothing leaves your device.
+
+## Favorites
+
+<div id="my-favorites" class="tracker-list"></div>
+
+## Done <span id="done-count" class="tracker-count"></span>
+
+<button id="export-done" class="btn btn-sm btn-outline-secondary tracker-export">Export list</button>
+
+<div id="my-done" class="tracker-list"></div>

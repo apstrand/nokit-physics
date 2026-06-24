@@ -1,0 +1,206 @@
+/* nokit.org — Physics site overrides */
+.navbar-logo { height: 28px; filter: brightness(0) invert(1); }
+
+.experiments-list {
+  background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.05) 0%, rgba(var(--bs-primary-rgb), 0.02) 100%);
+  border-left: 3px solid var(--bs-primary);
+  border-radius: 0 6px 6px 0;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.experiments-list strong {
+  color: var(--bs-primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.experiments-list li {
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.experiments-list a {
+  font-weight: 500;
+}
+
+[data-bs-theme="dark"] .experiments-list {
+  background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.12) 0%, rgba(var(--bs-primary-rgb), 0.05) 100%);
+}
+
+/* Lab tracker — action bar on experiment pages */
+.lab-action-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1.75rem;
+  flex-wrap: wrap;
+}
+
+.lab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.85rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--bs-border-color);
+  background: transparent;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--bs-body-color);
+  line-height: 1.4;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.lab-btn:hover {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+  background: transparent;
+}
+
+.lab-btn-fav.active {
+  background: #fff3cd;
+  border-color: #e6ac00;
+  color: #664d00;
+}
+
+.lab-btn-done.active {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+[data-bs-theme="dark"] .lab-btn-fav.active {
+  background: rgba(230, 172, 0, 0.18);
+  border-color: #e6ac00;
+  color: #ffc845;
+}
+
+[data-bs-theme="dark"] .lab-btn-done.active {
+  background: rgba(40, 167, 69, 0.18);
+  border-color: #28a745;
+  color: #7dd491;
+}
+
+/* Lab tracker — My Lab page */
+.tracker-list {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tracker-empty {
+  font-size: 0.9rem;
+  color: var(--bs-secondary);
+}
+
+.tracker-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--bs-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+
+.tracker-export {
+  float: right;
+  margin-top: -2.75rem;
+  font-size: 0.78rem;
+}
+
+.tracker-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.tracker-row:last-child {
+  border-bottom: none;
+}
+
+.tracker-date {
+  font-size: 0.8rem;
+  color: var(--bs-secondary);
+  white-space: nowrap;
+  min-width: 7rem;
+  flex-shrink: 0;
+}
+
+.tracker-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.tracker-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tracker-desc {
+  font-size: 0.82rem;
+  color: var(--bs-secondary);
+  margin-top: 0.1rem;
+}
+
+.tracker-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--bs-secondary);
+  opacity: 0.4;
+  padding: 0 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.tracker-remove:hover {
+  opacity: 1;
+  color: var(--bs-danger);
+}
+
+@media (max-width: 600px) {
+  .tracker-date { min-width: 5.5rem; }
+  .tracker-export { float: none; margin-top: 0; margin-bottom: 0.75rem; display: block; }
+}
+
+li:has(.list-star-btn) {
+  list-style: none;
+}
+
+/* Experiment list star buttons */
+.list-star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 0.15rem;
+  margin-right: 0.1rem;
+  color: var(--bs-secondary);
+  opacity: 0.3;
+  line-height: 1;
+  vertical-align: baseline;
+  transition: opacity 0.1s, color 0.1s;
+}
+
+.list-star-btn:hover {
+  opacity: 1;
+  color: #e6ac00;
+}
+
+.list-star-btn.active {
+  opacity: 1;
+  color: #e6ac00;
+}
